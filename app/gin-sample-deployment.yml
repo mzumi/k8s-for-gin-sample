@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gin-sample
+  labels:
+    app: gin-sample
+    type: application
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: gin-sample
+      type: application
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  revisionHistoryLimit: 5
+  template:
+    metadata:
+      name: gin-sample
+      labels:
+        app: gin-sample
+        type: application
+    spec:
+      containers:
+        - name: gin
+          image: mzumi/gin-sample:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          env:
+            - name: POSTGRES_HOST
+              value: "db-svc"
+            - name: POSTGRES_PORT
+              value: "5432"
+            - name: POSTGRES_SSLMODE
+              value: "disable"
+          envFrom:
+            - configMapRef:
+                name: postgres-config
