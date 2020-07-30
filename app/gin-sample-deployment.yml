@@ -40,3 +40,16 @@ spec:
           envFrom:
             - configMapRef:
                 name: postgres-config
+        - name: nginx
+          image: nginx:1.17.2-alpine
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: config-volume
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+      volumes:
+        - name: config-volume
+          configMap:
+            name: nginx-config
